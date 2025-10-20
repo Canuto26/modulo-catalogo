@@ -1,4 +1,4 @@
-import { ApiService } from './api';
+import { ApiService } from '../api/axios';
 import type {
   Product,
   Category,
@@ -7,7 +7,7 @@ import type {
   ProductFilters,
   CreateProductRequest,
   UpdateProductRequest
-} from '../types';
+} from '../types/types';
 
 // Servicio específico para productos
 export class ProductService extends ApiService {
@@ -25,12 +25,10 @@ export class ProductService extends ApiService {
     const queryString = queryParams.toString();
     const endpoint = queryString ? `/products/?${queryString}` : '/products/';
 
-    // Django REST Framework devuelve los datos directamente, no envueltos en 'data'
     const response = await this.get<any>(endpoint);
 
-    // Adaptar la respuesta de Django a nuestro formato esperado
     return {
-      data: response.results || response, // Django puede devolver 'results' para paginación
+      data: response.results || response, 
       total: response.count || (Array.isArray(response) ? response.length : 0),
       page: response.page || 1,
       limit: response.page_size || 20,

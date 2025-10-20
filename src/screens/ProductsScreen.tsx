@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Product } from '../types';
+import type { Product } from '../types/types';
 import { useProducts } from '../hooks/useProducts';
 import { useCategories } from '../hooks/useCategories';
 import { ProductList, ProductFilters, BackendTest } from '../components';
@@ -38,9 +38,7 @@ export const ProductsScreen: React.FC = () => {
 
   return (
     <div className="products-screen">
-      {/* Componente de prueba de conexión */}
       <BackendTest />
-      
       <div className="screen-header">
         <h1>Catálogo de Productos</h1>
         <div className="header-actions">

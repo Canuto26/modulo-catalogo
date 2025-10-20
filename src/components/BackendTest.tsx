@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productService } from '../services/productService';
-import type { Product, Category } from '../types';
+import type { Product, Category } from '../types/types';
 
 /**
  * Componente de prueba para verificar la integración con Django

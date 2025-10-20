@@ -9,7 +9,7 @@ import type{
   ProductFilters, 
   CreateProductRequest, 
   UpdateProductRequest 
-} from '../types';
+} from '../types/types';
 
 // Adaptador que decide si usar mock o API real
 export class ProductServiceAdapter {

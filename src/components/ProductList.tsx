@@ -1,15 +1,6 @@
 import React from 'react';
-import { Product } from '../types';
+import type {ProductListProps } from '../types/types';
 import { ProductCard } from './ProductCard';
-
-interface ProductListProps {
-  products: Product[];
-  loading: boolean;
-  error: string | null;
-  onEdit?: (product: Product) => void;
-  onDelete?: (productId: number) => void;
-  onView?: (product: Product) => void;
-}
 
 export const ProductList: React.FC<ProductListProps> = ({
   products,

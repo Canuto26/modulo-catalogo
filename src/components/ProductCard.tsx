@@ -1,12 +1,6 @@
 import React from 'react';
-import type { Product } from '../types';
+import type { ProductCardProps } from '../types/types';
 
-interface ProductCardProps {
-  product: Product;
-  onEdit?: (product: Product) => void;
-  onDelete?: (productId: number) => void;
-  onView?: (product: Product) => void;
-}
 
 export const ProductCard: React.FC<ProductCardProps> = ({ 
   product, 

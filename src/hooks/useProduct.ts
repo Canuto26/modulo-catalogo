@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { Product, CreateProductRequest, UpdateProductRequest, LoadingState } from '../types';
+import type { Product, CreateProductRequest, UpdateProductRequest, LoadingState } from '../types/types';
 import { productServiceAdapter } from '../services/productServiceAdapter';
 
 // Hook personalizado para manejar un producto individual

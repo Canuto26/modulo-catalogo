@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ProductFilters as ProductFiltersType, Category } from '../types';
+import type { ProductFilters as ProductFiltersType, Category } from '../types/types';
 
 interface ProductFiltersProps {
   filters: ProductFiltersType;

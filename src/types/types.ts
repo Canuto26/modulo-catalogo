@@ -1,5 +1,3 @@
-// Tipos principales para el módulo de productos
-
 export interface Product {
   id: number;
   name: string;
@@ -65,4 +63,20 @@ export interface ProductsState extends LoadingState {
   categories: Category[];
   filters: ProductFilters;
   selectedProduct: Product | null;
+}
+
+export interface ProductListProps {
+  products: Product[];
+  loading: boolean;
+  error: string | null;
+  onEdit?: (product: Product) => void;
+  onDelete?: (productId: number) => void;
+  onView?: (product: Product) => void;
+}
+
+export interface ProductCardProps {
+  product: Product;
+  onEdit?: (product: Product) => void;
+  onDelete?: (productId: number) => void;
+  onView?: (product: Product) => void;
 }

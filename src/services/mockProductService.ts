@@ -6,7 +6,7 @@ import type{
   ProductFilters, 
   CreateProductRequest, 
   UpdateProductRequest 
-} from '../types';
+} from '../types/types';
 import { mockProducts, mockCategories, simulateNetworkDelay, simulateRandomError } from '../data/mockData';
 
 // Servicio mock que simula el comportamiento de la API real

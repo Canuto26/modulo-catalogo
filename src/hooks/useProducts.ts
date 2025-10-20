@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Product, ProductFilters, LoadingState } from '../types';
+import type { Product, ProductFilters, LoadingState } from '../types/types';
 import { productService } from '../services/productService';
 
 // Hook personalizado para manejar el estado de productos
