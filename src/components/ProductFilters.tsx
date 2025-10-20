@@ -1,10 +1,10 @@
 import React from 'react';
-import { ProductFilters, Category } from '../types';
+import type { ProductFilters as ProductFiltersType, Category } from '../types';
 
 interface ProductFiltersProps {
-  filters: ProductFilters;
+  filters: ProductFiltersType;
   categories: Category[];
-  onFiltersChange: (filters: Partial<ProductFilters>) => void;
+  onFiltersChange: (filters: Partial<ProductFiltersType>) => void;
   onClearFilters: () => void;
 }
 
@@ -14,7 +14,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   onFiltersChange,
   onClearFilters,
 }) => {
-  const handleInputChange = (field: keyof ProductFilters, value: string | number) => {
+  const handleInputChange = (field: keyof ProductFiltersType, value: string | number) => {
     onFiltersChange({ [field]: value });
   };
 
@@ -22,6 +22,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
     <div className="product-filters">
       <h3>Filtros</h3>
       
+      {/* Campo de búsqueda */}
       <div className="filter-group">
         <label htmlFor="search">Buscar:</label>
         <input
@@ -33,6 +34,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         />
       </div>
 
+      {/* Filtro de categoría */}
       <div className="filter-group">
         <label htmlFor="category">Categoría:</label>
         <select
@@ -49,6 +51,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </select>
       </div>
 
+      {/* Precio mínimo */}
       <div className="filter-group">
         <label htmlFor="minPrice">Precio mínimo:</label>
         <input
@@ -60,6 +63,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         />
       </div>
 
+      {/* Precio máximo */}
       <div className="filter-group">
         <label htmlFor="maxPrice">Precio máximo:</label>
         <input
@@ -71,6 +75,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         />
       </div>
 
+      {/* Botón para limpiar filtros */}
       <button 
         className="btn btn-secondary"
         onClick={onClearFilters}
