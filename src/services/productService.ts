@@ -1,5 +1,5 @@
 import { ApiService } from './api';
-import { 
+import type { 
   Product, 
   Category, 
   ApiResponse, 

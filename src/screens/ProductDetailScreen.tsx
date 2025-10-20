@@ -27,7 +27,7 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       await updateProduct(product.id, updatedData);
       alert('Producto actualizado exitosamente');
     } catch (error) {
-      alert('Error al actualizar el producto');
+      alert('Error al actualizar el producto. Error: ' + error);
     }
   };
 
