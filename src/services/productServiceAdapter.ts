@@ -1,7 +1,7 @@
 import { config, log } from '../config/environment';
 import { productService } from './productService';
 import { mockProductService } from './mockProductService';
-import { 
+import type{ 
   Product, 
   Category, 
   ApiResponse, 

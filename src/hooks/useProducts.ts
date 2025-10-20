@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Product, ProductFilters, LoadingState } from '../types';
-import { productServiceAdapter } from '../services/productServiceAdapter';
+import type { Product, ProductFilters, LoadingState } from '../types';
+import { productService } from '../services/productService';
 
 // Hook personalizado para manejar el estado de productos
 export const useProducts = (initialFilters?: ProductFilters) => {
@@ -16,9 +16,11 @@ export const useProducts = (initialFilters?: ProductFilters) => {
     setLoading({ isLoading: true, error: null });
     
     try {
-      const response = await productServiceAdapter.getProducts(filters);
+      // IMPORTANTE: Ahora usa el servicio real de Django
+      const response = await productService.getProducts(filters);
       setProducts(response.data);
     } catch (error) {
+      console.error('Error al cargar productos:', error);
       setLoading({ 
         isLoading: false, 
         error: error instanceof Error ? error.message : 'Error al cargar productos' 

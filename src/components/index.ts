@@ -3,3 +3,4 @@ export { ProductCard } from './ProductCard';
 export { ProductList } from './ProductList';
 export { ProductFilters } from './ProductFilters';
 export { LoadingSpinner } from './LoadingSpinner';
+export { BackendTest } from './BackendTest';

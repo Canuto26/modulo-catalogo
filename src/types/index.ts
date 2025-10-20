@@ -10,6 +10,7 @@ export interface Product {
   stock: number;
   createdAt: string;
   updatedAt: string;
+  sku?: string;
 }
 
 export interface Category {

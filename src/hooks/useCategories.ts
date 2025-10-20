@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Category, LoadingState } from '../types';
-import { productServiceAdapter } from '../services/productServiceAdapter';
+import type{ Category, LoadingState } from '../types';
+import { productService } from '../services/productService';
 
 // Hook personalizado para manejar categorías
 export const useCategories = () => {
@@ -15,9 +15,11 @@ export const useCategories = () => {
     setLoading({ isLoading: true, error: null });
     
     try {
-      const response = await productServiceAdapter.getCategories();
+      // IMPORTANTE: Ahora usa el servicio real de Django
+      const response = await productService.getCategories();
       setCategories(response.data);
     } catch (error) {
+      console.error('Error al cargar categorías:', error);
       setLoading({ 
         isLoading: false, 
         error: error instanceof Error ? error.message : 'Error al cargar categorías' 

@@ -50,8 +50,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Módulo de Catálogo - React + TypeScript + SWC</p>
-        <p>Backend: Django | Base de datos: PostgreSQL</p>
+        <p>Equipo de desarrollo</p>
       </footer>
 
       <TestingPanel />
