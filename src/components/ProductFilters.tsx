@@ -1,12 +1,7 @@
-import React from 'react';
-import type { ProductFilters as ProductFiltersType, Category } from '../types';
+import React from "react";
+import type { ProductFiltersProps as ProductFiltersType, Category  } from '../types/ProductTypes';
+import type { ProductFiltersProps } from '../types/ProductTypes';
 
-interface ProductFiltersProps {
-  filters: ProductFiltersType;
-  categories: Category[];
-  onFiltersChange: (filters: Partial<ProductFiltersType>) => void;
-  onClearFilters: () => void;
-}
 
 export const ProductFilters: React.FC<ProductFiltersProps> = ({
   filters,

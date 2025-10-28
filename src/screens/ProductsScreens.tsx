@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
-import type { Product } from '../types';
-import { useProducts } from '../hooks/useProducts';
+import type { Product } from '../types/ProductTypes';
+import {  useProducts } from '../hooks/useProduct';
 import { useCategories } from '../hooks/useCategories';
-import { ProductList, ProductFilters, BackendTest } from '../components';
+import { ProductList, ProductFilters} from '../components';
 
-export const ProductsScreen: React.FC = () => {
+interface ProductsScreenProps {
+  onViewProduct: (productId: number) => void;
+  onEditProduct: (product: Product) => void;
+  onDeleteProduct: (productId: number) => void;
+}
+
+export const ProductsScreen: React.FC<ProductsScreenProps> = ({ 
+  onViewProduct, 
+  onEditProduct, 
+  onDeleteProduct 
+}) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   
@@ -13,44 +23,53 @@ export const ProductsScreen: React.FC = () => {
     loading, 
     filters, 
     updateFilters, 
-    clearFilters 
+    clearFilters,
+    deleteProduct 
   } = useProducts();
   
   const { categories } = useCategories();
 
   const handleEditProduct = (product: Product) => {
-    console.log('Editar producto:', product);
-    // Aquí se abriría un modal o navegaría a una pantalla de edición
+    onEditProduct(product);
   };
 
-  const handleDeleteProduct = (productId: number) => {
+  const handleDeleteProduct = async (productId: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-      console.log('Eliminar producto:', productId);
-      // Aquí se llamaría al servicio para eliminar el producto
+      try {
+        await deleteProduct(productId);
+        onDeleteProduct(productId);
+      } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        alert('Error al eliminar el producto');
+      }
     }
   };
 
   const handleViewProduct = (product: Product) => {
-    setSelectedProduct(product);
-    console.log('Ver producto:', product);
-    // Aquí se abriría un modal o navegaría a una pantalla de detalles
+    onViewProduct(product.id);
+  };
+
+  const handleCreateProduct = () => {
+    // Aquí podrías navegar a una pantalla de creación o abrir un modal
+    console.log('Crear nuevo producto');
   };
 
   return (
     <div className="products-screen">
-      {/* Componente de prueba de conexión */}
-      <BackendTest />
       
       <div className="screen-header">
         <h1>Catálogo de Productos</h1>
         <div className="header-actions">
           <button 
-            className="btn btn-primary"
+            className="btn btn-secondary"
             onClick={() => setShowFilters(!showFilters)}
           >
             {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
           </button>
-          <button className="btn btn-success">
+          <button 
+            className="btn btn-primary"
+            onClick={handleCreateProduct}
+          >
             Nuevo Producto
           </button>
         </div>
@@ -80,7 +99,6 @@ export const ProductsScreen: React.FC = () => {
 
       {selectedProduct && (
         <div className="product-modal">
-          {/* Aquí se mostraría un modal con los detalles del producto */}
           <div className="modal-content">
             <h2>{selectedProduct.name}</h2>
             <p>{selectedProduct.description}</p>
