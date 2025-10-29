@@ -35,7 +35,7 @@ export class ProductService extends ApiService {
     if (filters?.page_size) queryParams.append('page_size', filters.page_size.toString());
 
     const queryString = queryParams.toString();
-    const endpoint = queryString ? `/api/products/?${queryString}` : '/api/products/';
+    const endpoint = queryString ? `/products/?${queryString}` : '/products/';
 
     try {
       const response = await this.get<DjangoPaginatedResponse<Product>>(endpoint);
@@ -48,7 +48,7 @@ export class ProductService extends ApiService {
 
   async getProductById(id: number): Promise<ApiResponse<Product>> {
     try {
-      const data = await this.get<Product>(`/api/products/${id}/`);
+      const data = await this.get<Product>(`/products/${id}/`);
 
       return {
         data,
@@ -89,7 +89,7 @@ export class ProductService extends ApiService {
 
       console.log('📤 Enviando datos a Django:', djangoData);
 
-      const data = await this.post<Product, DjangoProductCreateRequest>('/api/products/', djangoData);
+      const data = await this.post<Product, DjangoProductCreateRequest>('/products/', djangoData);
       
       console.log('✅ Producto creado exitosamente:', data);
       
@@ -107,7 +107,7 @@ export class ProductService extends ApiService {
 
   async updateProduct(id: number, productData: UpdateProductRequest): Promise<ApiResponse<Product>> {
     try {
-      const data = await this.put<Product, UpdateProductRequest>(`/api/products/${id}/`, productData);
+      const data = await this.put<Product, UpdateProductRequest>(`/products/${id}/`, productData);
 
       return {
         data,
@@ -122,7 +122,7 @@ export class ProductService extends ApiService {
 
   async deleteProduct(id: number): Promise<ApiResponse<void>> {
     try {
-      await this.delete<void>(`/api/products/${id}/`);
+      await this.delete<void>(`/products/${id}/`);
       return {
         data: undefined,
         message: 'Producto eliminado correctamente',
@@ -136,7 +136,7 @@ export class ProductService extends ApiService {
 
   async getCategories(): Promise<ApiResponse<Category[]>> {
     try {
-      const data = await this.get<DjangoPaginatedResponse<Category> | Category[]>('/api/categories/');
+      const data = await this.get<DjangoPaginatedResponse<Category> | Category[]>('/categories/');
       
       let categories: Category[];
       if (Array.isArray(data)) {
@@ -160,7 +160,7 @@ export class ProductService extends ApiService {
 
   async createCategory(categoryData: CreateCategoryRequest): Promise<ApiResponse<Category>> {
     try {
-      const data = await this.post<Category, CreateCategoryRequest>('/api/categories/', categoryData);
+      const data = await this.post<Category, CreateCategoryRequest>('/categories/', categoryData);
 
       return {
         data,
@@ -175,7 +175,7 @@ export class ProductService extends ApiService {
 
   async updateCategory(id: number, categoryData: Partial<Category>): Promise<ApiResponse<Category>> {
     try {
-      const data = await this.put<Category, Partial<Category>>(`/api/categories/${id}/`, categoryData);
+      const data = await this.put<Category, Partial<Category>>(`/categories/${id}/`, categoryData);
       return {
         data,
         message: 'Categoría actualizada correctamente',
@@ -189,7 +189,7 @@ export class ProductService extends ApiService {
 
   async deleteCategory(id: number): Promise<ApiResponse<void>> {
     try {
-      await this.delete<void>(`/api/categories/${id}/`);
+      await this.delete<void>(`/categories/${id}/`);
 
       return {
         data: undefined,
@@ -213,8 +213,8 @@ export class ProductService extends ApiService {
 
     const queryString = queryParams.toString();
     const endpoint = queryString 
-      ? `/api/categories/${categoryId}/products/?${queryString}`
-      : `/api/categories/${categoryId}/products/`;
+      ? `/categories/${categoryId}/products/?${queryString}`
+      : `/categories/${categoryId}/products/`;
 
     try {
       const response = await this.get<DjangoPaginatedResponse<Product>>(endpoint);
@@ -237,7 +237,7 @@ export class ProductService extends ApiService {
 
     try {
       const response = await this.get<SearchResponse>(
-      `/api/products/search/?${queryParams.toString()}`
+      `/products/search/?${queryParams.toString()}`
   );
       return this.adaptSearchResponse(response);
     } catch (error) {
@@ -250,13 +250,13 @@ export class ProductService extends ApiService {
     try {
       console.log('🧪 Probando conexión con Django...');
       
-      const getResponse = await this.get<SimpleTestResponse>('/api/products/simple-test/');
+      const getResponse = await this.get<SimpleTestResponse>('/products/simple-test/');
       
       const postData: TestPostData = {
         test: 'datos de prueba',
         number: 123
       };
-      const postResponse = await this.post<SimpleTestResponse, TestPostData>('/api/products/simple-test/', postData);
+      const postResponse = await this.post<SimpleTestResponse, TestPostData>('/products/simple-test/', postData);
       
       return {
         get: getResponse,
@@ -292,7 +292,7 @@ export class ProductService extends ApiService {
 
       console.log('🧪 Probando con endpoint de debug...');
       
-      const response = await this.post<DebugProductResponse, DjangoProductCreateRequest>('/api/products/debug/create-product/', testData);
+      const response = await this.post<DebugProductResponse, DjangoProductCreateRequest>('/products/debug/create-product/', testData);
       
       console.log('✅ Respuesta del debug:', response);
       
