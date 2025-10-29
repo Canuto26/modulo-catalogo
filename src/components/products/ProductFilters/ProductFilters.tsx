@@ -1,6 +1,6 @@
 import React from "react";
-import type { ProductFiltersProps as ProductFiltersType, Category  } from '../types/ProductTypes';
-import type { ProductFiltersProps } from '../types/ProductTypes';
+import type { ProductFiltersProps as ProductFiltersType, Category  } from '../../../types/ProductTypes';
+import type { ProductFiltersProps } from '../../../types/ProductTypes';
 
 
 export const ProductFilters: React.FC<ProductFiltersProps> = ({

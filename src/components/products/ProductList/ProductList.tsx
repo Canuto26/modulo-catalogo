@@ -1,6 +1,6 @@
 import React from 'react';
-import type { Product } from '../types/ProductTypes';
-import { ProductCard } from './ProductCard';
+import type { Product } from '../../../types/ProductTypes';
+import { ProductCard } from '../ProductCard/ProductCard';
 
 interface ProductListProps {
   products: Product[];
