@@ -1,5 +1,5 @@
 import React from "react";
-import type { ProductCardProps } from "../types/ProductTypes";
+import type { ProductCardProps } from "../../../types/ProductTypes";
 
 export const ProductCard: React.FC<ProductCardProps> = ({ 
   product, 

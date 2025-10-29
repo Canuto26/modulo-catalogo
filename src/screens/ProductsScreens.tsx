@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { Product } from '../types/ProductTypes';
 import {  useProducts } from '../hooks/useProduct';
 import { useCategories } from '../hooks/useCategories';
-import { ProductList, ProductFilters} from '../components';
+import { ProductList, ProductFiltersComp} from '../components';
 
 interface ProductsScreenProps {
   onViewProduct: (productId: number) => void;
@@ -77,7 +77,7 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
 
       {showFilters && (
         <div className="filters-section">
-          <ProductFilters
+          <ProductFiltersComp
             filters={filters}
             categories={categories}
             onFiltersChange={updateFilters}

@@ -15,13 +15,6 @@ export interface PaginatedResponse<T> {
   totalPages: number
 }
 
-// Tipo que refleja la paginación que típicamente devuelve DRF
-export interface DjangoPaginatedResponse<T> {
-  count: number
-  next: string | null
-  previous: string | null
-  results: T[]
-}
 
 // Product Module Types
 export interface Product {

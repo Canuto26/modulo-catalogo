@@ -1,15 +1,14 @@
 import React from "react";
-import type { ProductFiltersProps as ProductFiltersType, Category  } from '../../../types/ProductTypes';
-import type { ProductFiltersProps } from '../../../types/ProductTypes';
+import type { ProductFiltersProps, ProductFilters } from '../../../types/ProductTypes';
 
-
-export const ProductFilters: React.FC<ProductFiltersProps> = ({
+export const ProductFiltersComp: React.FC<ProductFiltersProps> = ({
   filters,
   categories,
   onFiltersChange,
   onClearFilters,
 }) => {
-  const handleInputChange = (field: keyof ProductFiltersType, value: string | number) => {
+  // CORRECCIÓN: Usar keyof ProductFilters (no ProductFiltersProps)
+  const handleInputChange = (field: keyof ProductFilters, value: string | number | undefined) => {
     onFiltersChange({ [field]: value });
   };
 
@@ -25,7 +24,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           type="text"
           placeholder="Nombre del producto..."
           value={filters.search || ''}
-          onChange={(e) => handleInputChange('search', e.target.value)}
+          onChange={(e) => handleInputChange('search', e.target.value || undefined)}
         />
       </div>
 
@@ -35,7 +34,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         <select
           id="category"
           value={filters.category || ''}
-          onChange={(e) => handleInputChange('category', e.target.value)}
+          onChange={(e) => handleInputChange('category', e.target.value || undefined)}
         >
           <option value="">Todas las categorías</option>
           {categories.map((category) => (
@@ -54,7 +53,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           type="number"
           placeholder="0"
           value={filters.minPrice || ''}
-          onChange={(e) => handleInputChange('minPrice', Number(e.target.value) || 0)}
+          onChange={(e) => handleInputChange('minPrice', e.target.value ? Number(e.target.value) : undefined)}
         />
       </div>
 
@@ -66,7 +65,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           type="number"
           placeholder="1000000"
           value={filters.maxPrice || ''}
-          onChange={(e) => handleInputChange('maxPrice', Number(e.target.value) || 0)}
+          onChange={(e) => handleInputChange('maxPrice', e.target.value ? Number(e.target.value) : undefined)}
         />
       </div>
 
