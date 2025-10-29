@@ -7,22 +7,10 @@ import type {
   UpdateProductRequest,
   ApiResponse,
   PaginatedResponse,
-  DjangoPaginatedResponse
+  DjangoPaginatedResponse,
+  SearchResponse,
+  CreateCategoryRequest
 } from "../types/ProductTypes";
-
-// Tipo para respuestas de búsqueda
-interface SearchResponse {
-  results: Product[];
-  count: number;
-  next?: string | null;
-  previous?: string | null;
-}
-
-// Tipo para crear categorías
-interface CreateCategoryRequest {
-  name: string;
-  description?: string;
-}
 
 export class ProductService extends ApiService {
   
@@ -255,7 +243,7 @@ export class ProductService extends ApiService {
   }
 
   // Método auxiliar para extraer el número de página de la URL
-  private extractPageFromUrl(url: string | null): number | null {
+  private extractPageFromUrl(url: string | null | undefined): number | null {
     if (!url) return null;
     
     try {

@@ -15,7 +15,6 @@ export interface PaginatedResponse<T> {
   totalPages: number
 }
 
-
 // Product Module Types
 export interface Product {
   id: number
@@ -101,11 +100,23 @@ export interface ProductDetailScreenProps {
   productId: number
 }
 
-// En src/types/types.ts - agregar esta interfaz:
-
 export interface DjangoPaginatedResponse<T> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
+
+// AGREGAR esta interfaz para respuestas de búsqueda
+export interface SearchResponse {
+  results: Product[]
+  count: number
+  next: string | null
+  previous: string | null
+}
+
+// AGREGAR esta interfaz para crear categorías
+export interface CreateCategoryRequest {
+  name: string
+  description?: string
 }

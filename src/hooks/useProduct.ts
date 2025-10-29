@@ -4,6 +4,7 @@ import type {
   Product, 
   ProductFilters, 
   UpdateProductRequest,
+  CreateProductRequest,
   LoadingState,
   PaginatedResponse,
   ApiResponse
@@ -41,7 +42,7 @@ export const useProducts = (initialFilters?: ProductFilters) => {
     setFilters({});
   }, []);
 
-  const createProduct = useCallback(async (productData: UpdateProductRequest) => {
+  const createProduct = useCallback(async (productData: CreateProductRequest) => {
     setLoading({ isLoading: true, error: null });
     try {
       const response: ApiResponse<Product> = await productService.createProduct(productData);
