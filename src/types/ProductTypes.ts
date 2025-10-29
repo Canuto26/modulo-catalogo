@@ -100,6 +100,30 @@ export interface ProductDetailScreenProps {
   productId: number
 }
 
+export interface ProductsScreenProps {
+  onViewProduct: (productId: number) => void;
+  onEditProduct: (product: Product) => void;
+  onDeleteProduct: (productId: number) => void;
+}
+
+// Props para el formulario de producto
+export interface ProductFormProps {
+  categories: Category[]
+  onSubmit: (productData: CreateProductRequest) => Promise<void>
+  onCancel: () => void
+  loading?: boolean
+}
+
+// Interfaz para errores de validación del formulario
+export interface ProductFormErrors {
+  name?: string
+  description?: string
+  price?: string
+  category?: string
+  stock?: string
+  image?: string
+}
+
 export interface DjangoPaginatedResponse<T> {
   count: number
   next: string | null
@@ -107,7 +131,7 @@ export interface DjangoPaginatedResponse<T> {
   results: T[]
 }
 
-// AGREGAR esta interfaz para respuestas de búsqueda
+// Interfaz para respuestas de búsqueda
 export interface SearchResponse {
   results: Product[]
   count: number
@@ -115,7 +139,7 @@ export interface SearchResponse {
   previous: string | null
 }
 
-// AGREGAR esta interfaz para crear categorías
+// Interfaz para crear categorías
 export interface CreateCategoryRequest {
   name: string
   description?: string

@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
-import type { Product } from '../types/ProductTypes';
-import {  useProducts } from '../hooks/useProduct';
+import type { Product, CreateProductRequest, ProductsScreenProps } from '../types/ProductTypes';
+import { useProducts } from '../hooks/useProduct';
 import { useCategories } from '../hooks/useCategories';
-import { ProductList, ProductFiltersComp} from '../components';
+import { ProductList, ProductFiltersComp, ProductForm } from '../components';
 
-interface ProductsScreenProps {
-  onViewProduct: (productId: number) => void;
-  onEditProduct: (product: Product) => void;
-  onDeleteProduct: (productId: number) => void;
-}
 
 export const ProductsScreen: React.FC<ProductsScreenProps> = ({ 
   onViewProduct, 
@@ -17,6 +12,7 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
 }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   
   const { 
     products, 
@@ -24,7 +20,8 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
     filters, 
     updateFilters, 
     clearFilters,
-    deleteProduct 
+    deleteProduct,
+    createProduct 
   } = useProducts();
   
   const { categories } = useCategories();
@@ -50,8 +47,23 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
   };
 
   const handleCreateProduct = () => {
-    // Aquí podrías navegar a una pantalla de creación o abrir un modal
-    console.log('Crear nuevo producto');
+    setShowCreateForm(true);
+  };
+
+  const handleSubmitCreateProduct = async (productData: CreateProductRequest) => {
+    try {
+      await createProduct(productData);
+      setShowCreateForm(false);
+      alert('Producto creado exitosamente');
+    } catch (error) {
+      console.error('Error al crear producto:', error);
+      alert('Error al crear el producto: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      throw error; // Re-lanzar el error para que el formulario lo maneje
+    }
+  };
+
+  const handleCancelCreate = () => {
+    setShowCreateForm(false);
   };
 
   return (
@@ -96,6 +108,15 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
           onView={handleViewProduct}
         />
       </div>
+
+      {showCreateForm && (
+        <ProductForm
+          categories={categories}
+          onSubmit={handleSubmitCreateProduct}
+          onCancel={handleCancelCreate}
+          loading={loading.isLoading}
+        />
+      )}
 
       {selectedProduct && (
         <div className="product-modal">
