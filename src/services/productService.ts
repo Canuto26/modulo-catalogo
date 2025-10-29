@@ -1,3 +1,4 @@
+// En ProductService.ts - completamente tipado sin any
 import { ApiService } from "../api/axios";
 import type { 
   Product, 
@@ -9,15 +10,23 @@ import type {
   PaginatedResponse,
   DjangoPaginatedResponse,
   SearchResponse,
-  CreateCategoryRequest
+  CreateCategoryRequest,
+  DjangoProductCreateRequest,
+  SimpleTestResponse,
+  DebugProductResponse,
+  TestPostData
 } from "../types/ProductTypes";
+
+interface ConnectionTestResult {
+  get: SimpleTestResponse;
+  post: SimpleTestResponse;
+}
 
 export class ProductService extends ApiService {
   
   async getProducts(filters?: ProductFilters): Promise<PaginatedResponse<Product>> {
     const queryParams = new URLSearchParams();
 
-    // Agregar filtros a los parámetros de consulta
     if (filters?.category) queryParams.append('category', filters.category);
     if (filters?.minPrice) queryParams.append('min_price', filters.minPrice.toString());
     if (filters?.maxPrice) queryParams.append('max_price', filters.maxPrice.toString());
@@ -26,7 +35,7 @@ export class ProductService extends ApiService {
     if (filters?.page_size) queryParams.append('page_size', filters.page_size.toString());
 
     const queryString = queryParams.toString();
-    const endpoint = queryString ? `/products/?${queryString}` : '/products/';
+    const endpoint = queryString ? `/api/products/?${queryString}` : '/api/products/';
 
     try {
       const response = await this.get<DjangoPaginatedResponse<Product>>(endpoint);
@@ -37,10 +46,10 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Obtener un producto por ID
   async getProductById(id: number): Promise<ApiResponse<Product>> {
     try {
-      const data = await this.get<Product>(`/products/${id}/`);
+      const data = await this.get<Product>(`/api/products/${id}/`);
+
       return {
         data,
         message: 'Producto obtenido correctamente',
@@ -52,25 +61,54 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Crear un nuevo producto
   async createProduct(productData: CreateProductRequest): Promise<ApiResponse<Product>> {
     try {
-      const data = await this.post<Product, CreateProductRequest>('/products/', productData);
+      console.log('🔍 INICIANDO CREACIÓN DE PRODUCTO...');
+      
+      const categoriesResponse = await this.getCategories();
+      console.log('📋 Categorías obtenidas:', categoriesResponse.data);
+      
+      const categories = categoriesResponse.data;
+      const category = categories.find(cat => cat.name === productData.category);
+      
+      if (!category) {
+        const availableCategories = categories.map(c => c.name).join(', ');
+        throw new Error(`Categoría "${productData.category}" no encontrada. Categorías disponibles: ${availableCategories}`);
+      }
+
+      console.log('✅ Categoría encontrada:', category);
+
+      const djangoData: DjangoProductCreateRequest = {
+        name: productData.name,
+        description: productData.description,
+        price: productData.price.toString(),
+        category_id: category.id,
+        stock: productData.stock,
+        image: productData.image || null,
+      };
+
+      console.log('📤 Enviando datos a Django:', djangoData);
+
+      const data = await this.post<Product, DjangoProductCreateRequest>('/api/products/', djangoData);
+      
+      console.log('✅ Producto creado exitosamente:', data);
+      
       return {
         data,
         message: 'Producto creado correctamente',
         success: true
       };
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error('❌ Error completo en createProduct:');
+      this.logError(error);
       throw error;
     }
   }
 
-  // Actualizar un producto existente
   async updateProduct(id: number, productData: UpdateProductRequest): Promise<ApiResponse<Product>> {
     try {
-      const data = await this.put<Product, UpdateProductRequest>(`/products/${id}/`, productData);
+      const data = await this.put<Product, UpdateProductRequest>(`/api/products/${id}/`, productData);
+
       return {
         data,
         message: 'Producto actualizado correctamente',
@@ -82,10 +120,9 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Eliminar un producto
   async deleteProduct(id: number): Promise<ApiResponse<void>> {
     try {
-      await this.delete<void>(`/products/${id}/`);
+      await this.delete<void>(`/api/products/${id}/`);
       return {
         data: undefined,
         message: 'Producto eliminado correctamente',
@@ -97,12 +134,10 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Obtener todas las categorías
   async getCategories(): Promise<ApiResponse<Category[]>> {
     try {
-      const data = await this.get<DjangoPaginatedResponse<Category> | Category[]>('/categories/');
+      const data = await this.get<DjangoPaginatedResponse<Category> | Category[]>('/api/categories/');
       
-      // Adaptar la respuesta según el formato
       let categories: Category[];
       if (Array.isArray(data)) {
         categories = data;
@@ -123,10 +158,10 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Crear una nueva categoría
   async createCategory(categoryData: CreateCategoryRequest): Promise<ApiResponse<Category>> {
     try {
-      const data = await this.post<Category, CreateCategoryRequest>('/categories/', categoryData);
+      const data = await this.post<Category, CreateCategoryRequest>('/api/categories/', categoryData);
+
       return {
         data,
         message: 'Categoría creada correctamente',
@@ -138,10 +173,9 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Actualizar una categoría existente
   async updateCategory(id: number, categoryData: Partial<Category>): Promise<ApiResponse<Category>> {
     try {
-      const data = await this.put<Category, Partial<Category>>(`/categories/${id}/`, categoryData);
+      const data = await this.put<Category, Partial<Category>>(`/api/categories/${id}/`, categoryData);
       return {
         data,
         message: 'Categoría actualizada correctamente',
@@ -153,10 +187,10 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Eliminar una categoría
   async deleteCategory(id: number): Promise<ApiResponse<void>> {
     try {
-      await this.delete<void>(`/categories/${id}/`);
+      await this.delete<void>(`/api/categories/${id}/`);
+
       return {
         data: undefined,
         message: 'Categoría eliminada correctamente',
@@ -168,7 +202,6 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Obtener productos por categoría
   async getProductsByCategory(categoryId: number, filters?: ProductFilters): Promise<PaginatedResponse<Product>> {
     const queryParams = new URLSearchParams();
     
@@ -180,8 +213,8 @@ export class ProductService extends ApiService {
 
     const queryString = queryParams.toString();
     const endpoint = queryString 
-      ? `/categories/${categoryId}/products/?${queryString}`
-      : `/categories/${categoryId}/products/`;
+      ? `/api/categories/${categoryId}/products/?${queryString}`
+      : `/api/categories/${categoryId}/products/`;
 
     try {
       const response = await this.get<DjangoPaginatedResponse<Product>>(endpoint);
@@ -192,7 +225,6 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Búsqueda avanzada
   async searchProducts(query: string, filters?: ProductFilters): Promise<PaginatedResponse<Product>> {
     const queryParams = new URLSearchParams();
     queryParams.append('q', query);
@@ -205,8 +237,8 @@ export class ProductService extends ApiService {
 
     try {
       const response = await this.get<SearchResponse>(
-        `/products/search/?${queryParams.toString()}`
-      );
+      `/api/products/search/?${queryParams.toString()}`
+  );
       return this.adaptSearchResponse(response);
     } catch (error) {
       console.error('Error searching products:', error);
@@ -214,7 +246,73 @@ export class ProductService extends ApiService {
     }
   }
 
-  // Método auxiliar para adaptar respuestas paginadas de Django
+  async testConnection(): Promise<ConnectionTestResult> {
+    try {
+      console.log('🧪 Probando conexión con Django...');
+      
+      const getResponse = await this.get<SimpleTestResponse>('/api/products/simple-test/');
+      
+      const postData: TestPostData = {
+        test: 'datos de prueba',
+        number: 123
+      };
+      const postResponse = await this.post<SimpleTestResponse, TestPostData>('/api/products/simple-test/', postData);
+      
+      return {
+        get: getResponse,
+        post: postResponse
+      };
+      
+    } catch (error) {
+      console.error('❌ Error de conexión:');
+      this.logError(error);
+      throw error;
+    }
+  }
+
+  async testDebugCreate(productData: CreateProductRequest): Promise<ApiResponse<Product>> {
+    try {
+      const categoriesResponse = await this.getCategories();
+      const categories = categoriesResponse.data;
+      const category = categories.find(cat => cat.name === productData.category);
+      
+      if (!category) {
+        const availableCategories = categories.map(c => c.name).join(', ');
+        throw new Error(`Categoría "${productData.category}" no encontrada. Categorías disponibles: ${availableCategories}`);
+      }
+
+      const testData: DjangoProductCreateRequest = {
+        name: productData.name,
+        description: productData.description,
+        price: productData.price.toString(),
+        category_id: category.id,
+        stock: productData.stock,
+        image: productData.image || null,
+      };
+
+      console.log('🧪 Probando con endpoint de debug...');
+      
+      const response = await this.post<DebugProductResponse, DjangoProductCreateRequest>('/api/products/debug/create-product/', testData);
+      
+      console.log('✅ Respuesta del debug:', response);
+      
+      if (response.product) {
+        return {
+          data: response.product,
+          message: response.message || 'Producto creado exitosamente',
+          success: true
+        };
+      } else {
+        throw new Error(response.message || 'Error en la creación del producto');
+      }
+      
+    } catch (error) {
+      console.error('❌ Error en debug:');
+      this.logError(error);
+      throw error;
+    }
+  }
+
   private adaptPaginatedResponse<T>(response: DjangoPaginatedResponse<T>): PaginatedResponse<T> {
     const pageSize = response.results.length > 0 ? response.results.length : 20;
     const currentPage = this.extractPageFromUrl(response.next || response.previous) || 1;
@@ -228,7 +326,6 @@ export class ProductService extends ApiService {
     };
   }
 
-  // Método auxiliar para adaptar respuestas de búsqueda
   private adaptSearchResponse(response: SearchResponse): PaginatedResponse<Product> {
     const pageSize = response.results.length > 0 ? response.results.length : 20;
     const currentPage = this.extractPageFromUrl(response.next || response.previous) || 1;
@@ -242,7 +339,6 @@ export class ProductService extends ApiService {
     };
   }
 
-  // Método auxiliar para extraer el número de página de la URL
   private extractPageFromUrl(url: string | null | undefined): number | null {
     if (!url) return null;
     
@@ -254,7 +350,16 @@ export class ProductService extends ApiService {
       return null;
     }
   }
+
+  private logError(error: unknown): void {
+    if (error instanceof Error) {
+      console.error('Tipo:', error.constructor.name);
+      console.error('Mensaje:', error.message);
+      console.error('Stack:', error.stack);
+    } else {
+      console.error('Error desconocido:', error);
+    }
+  }
 }
 
-// Instancia del servicio para usar en la aplicación
 export const productService = new ProductService();
