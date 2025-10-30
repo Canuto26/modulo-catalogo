@@ -1,6 +1,6 @@
 import React from 'react';
 import { useProduct } from '../hooks/useProduct';
-import { LoadingSpinner } from '../components';
+import { LoadingSpinner } from '../components/common/LoadingSpinners/LoadingSpinner';
 
 interface ProductDetailScreenProps {
   productId: number;
@@ -16,11 +16,10 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
     
     try {
       const updatedData = {
-        id: product.id,
         name: product.name + ' (Actualizado)',
         description: product.description,
         price: product.price,
-        category: product.category,
+        category: product.category.toString(),
         stock: product.stock,
       };
       
@@ -39,6 +38,7 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
         await deleteProduct(product.id);
         alert('Producto eliminado exitosamente');
         // Aquí se podría navegar de vuelta a la lista de productos
+        window.location.reload(); // Temporal - luego implementar navegación proper
       } catch (error) {
         alert('Error al eliminar el producto. Error: ' + error);
       }
@@ -54,6 +54,12 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       <div className="error-container">
         <h2>Error al cargar el producto</h2>
         <p>{loading.error}</p>
+        <button 
+          className="btn btn-primary"
+          onClick={() => window.location.reload()}
+        >
+          Reintentar
+        </button>
       </div>
     );
   }
@@ -63,6 +69,12 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       <div className="not-found">
         <h2>Producto no encontrado</h2>
         <p>El producto que buscas no existe o ha sido eliminado.</p>
+        <button 
+          className="btn btn-primary"
+          onClick={() => window.location.reload()}
+        >
+          Volver a productos
+        </button>
       </div>
     );
   }
@@ -75,7 +87,13 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-CO');
+    return new Date(dateString).toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -86,14 +104,16 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
           <button 
             className="btn btn-secondary"
             onClick={handleUpdateProduct}
+            disabled={loading.isLoading}
           >
-            Actualizar
+            {loading.isLoading ? 'Actualizando...' : 'Actualizar'}
           </button>
           <button 
             className="btn btn-danger"
             onClick={handleDeleteProduct}
+            disabled={loading.isLoading}
           >
-            Eliminar
+            {loading.isLoading ? 'Eliminando...' : 'Eliminar'}
           </button>
         </div>
       </div>
@@ -108,7 +128,7 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             />
           ) : (
             <div className="no-image-large">
-              <span>Sin imagen disponible</span>
+              <span>🖼️ Sin imagen disponible</span>
             </div>
           )}
         </div>
@@ -125,14 +145,21 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
               </div>
               
               <div className="detail-item">
-                <label>Categoría:</label>
-                <span>{product.category}</span>
+                <label>Categoría ID:</label>
+                <span className="category-id">{product.category}</span>
               </div>
               
               <div className="detail-item">
                 <label>Stock disponible:</label>
                 <span className={product.stock > 0 ? 'in-stock' : 'out-of-stock'}>
                   {product.stock} unidades
+                </span>
+              </div>
+
+              <div className="detail-item">
+                <label>Estado:</label>
+                <span className="status-badge">
+                  {product.stock > 0 ? '🟢 Disponible' : '🔴 Agotado'}
                 </span>
               </div>
             </div>
@@ -143,7 +170,7 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
             <div className="meta-details">
               <div className="meta-item">
                 <label>ID del producto:</label>
-                <span>{product.id}</span>
+                <span className="product-id">#{product.id}</span>
               </div>
               
               <div className="meta-item">
