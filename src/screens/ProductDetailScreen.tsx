@@ -101,13 +101,15 @@ export const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({
       <div className="product-detail-header">
         <h1>{product.name}</h1>
         <div className="product-actions">
-          <button 
+          
+          {/* //!activar solo en boton editae */}
+          {/* <button 
             className="btn btn-secondary"
             onClick={handleUpdateProduct}
             disabled={loading.isLoading}
           >
             {loading.isLoading ? 'Actualizando...' : 'Actualizar'}
-          </button>
+          </button> */}
           <button 
             className="btn btn-danger"
             onClick={handleDeleteProduct}
