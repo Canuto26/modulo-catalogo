@@ -21,7 +21,7 @@ export interface Product {
   name: string
   description: string
   price: number
-  category: string
+  category: number
   image?: string
   stock: number
   createdAt: string
@@ -131,6 +131,16 @@ export interface DjangoPaginatedResponse<T> {
   results: T[]
 }
 
+// Interface para los datos que enviamos a Django
+export interface DjangoProductData {
+  name: string;
+  description: string;
+  price: string;
+  category: number;
+  stock: number;
+  image: string | null;
+}
+
 // Interfaz para respuestas de búsqueda
 export interface SearchResponse {
   results: Product[]
@@ -143,4 +153,21 @@ export interface SearchResponse {
 export interface CreateCategoryRequest {
   name: string
   description?: string
+}
+
+export interface DjangoProductCreateRequest {
+  name: string;
+  description: string;
+  price: string;
+  category: number;
+  stock: number;
+  image?: string | null;
+}
+
+// Tipo para errores de API
+export interface ApiErrorData {
+  detail?: string;
+  message?: string;
+  error?: string;
+  errors?: Record<string, string[]>;
 }

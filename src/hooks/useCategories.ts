@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { productService } from '../services/ProductService';
+import { productService } from '../services/productService';
 import type { 
   Category, 
   LoadingState, 
