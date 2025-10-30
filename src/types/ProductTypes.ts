@@ -21,7 +21,7 @@ export interface Product {
   name: string
   description: string
   price: number
-  category: string
+  category: number
   image?: string
   stock: number
   createdAt: string
@@ -133,13 +133,13 @@ export interface DjangoPaginatedResponse<T> {
 
 // Interface para los datos que enviamos a Django
 export interface DjangoProductData {
-      name: string;
-      description: string;
-      price: string;
-      category_id: number;
-      stock: number;
-      image: string | null;
-    }
+  name: string;
+  description: string;
+  price: string;
+  category: number;
+  stock: number;
+  image: string | null;
+}
 
 // Interfaz para respuestas de búsqueda
 export interface SearchResponse {
@@ -155,35 +155,13 @@ export interface CreateCategoryRequest {
   description?: string
 }
 
-
-// ! Test
-// En src/types/ProductTypes.ts - agregar tipos específicos
-export interface SimpleTestResponse {
-  message: string;
-  status: string;
-  received_data?: Record<string, unknown>;
-}
-
-export interface DebugProductResponse {
-  message: string;
-  product?: Product;
-  errors?: Record<string, string[]>;
-  received_data?: Record<string, unknown>;
-}
-
 export interface DjangoProductCreateRequest {
   name: string;
   description: string;
   price: string;
-  category_id: number;
+  category: number;
   stock: number;
   image?: string | null;
-}
-
-// Tipo para datos de prueba POST
-export interface TestPostData {
-  test: string;
-  number: number;
 }
 
 // Tipo para errores de API
@@ -193,4 +171,3 @@ export interface ApiErrorData {
   error?: string;
   errors?: Record<string, string[]>;
 }
-// ! Fin Test

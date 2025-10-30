@@ -1,4 +1,4 @@
-// En ProductService.ts - completamente tipado sin any
+// En ProductService.ts - completamente tipado sin any, sin tests
 import { ApiService } from "../api/axios";
 import type { 
   Product, 
@@ -11,16 +11,8 @@ import type {
   DjangoPaginatedResponse,
   SearchResponse,
   CreateCategoryRequest,
-  DjangoProductCreateRequest,
-  SimpleTestResponse,
-  DebugProductResponse,
-  TestPostData
+  DjangoProductCreateRequest
 } from "../types/ProductTypes";
-
-interface ConnectionTestResult {
-  get: SimpleTestResponse;
-  post: SimpleTestResponse;
-}
 
 export class ProductService extends ApiService {
   
@@ -64,30 +56,47 @@ export class ProductService extends ApiService {
   async createProduct(productData: CreateProductRequest): Promise<ApiResponse<Product>> {
     try {
       console.log('🔍 INICIANDO CREACIÓN DE PRODUCTO...');
+      console.log('📤 Datos recibidos del formulario:', productData);
       
       const categoriesResponse = await this.getCategories();
       console.log('📋 Categorías obtenidas:', categoriesResponse.data);
       
       const categories = categoriesResponse.data;
-      const category = categories.find(cat => cat.name === productData.category);
       
+      // Convertir category de string a number
+      const categoryId = parseInt(productData.category);
+      if (isNaN(categoryId)) {
+        throw new Error(`ID de categoría inválido: ${productData.category}`);
+      }
+
+      // Verificar que la categoría exista
+      const category = categories.find(cat => cat.id === categoryId);
       if (!category) {
-        const availableCategories = categories.map(c => c.name).join(', ');
-        throw new Error(`Categoría "${productData.category}" no encontrada. Categorías disponibles: ${availableCategories}`);
+        const availableCategories = categories.map(c => `${c.id}: ${c.name}`).join(', ');
+        throw new Error(`Categoría con ID "${categoryId}" no encontrada. Categorías disponibles: ${availableCategories}`);
       }
 
       console.log('✅ Categoría encontrada:', category);
 
+      // DATOS CORREGIDOS PARA DJANGO
       const djangoData: DjangoProductCreateRequest = {
-        name: productData.name,
-        description: productData.description,
-        price: productData.price.toString(),
-        category_id: category.id,
-        stock: productData.stock,
+        name: productData.name.trim(),
+        description: productData.description.trim(),
+        price: parseFloat(productData.price.toString()).toFixed(2), // Asegurar formato string
+        category: categoryId, // Número (ID de categoría)
+        stock: parseInt(productData.stock.toString()),
         image: productData.image || null,
       };
 
       console.log('📤 Enviando datos a Django:', djangoData);
+      console.log('📋 Tipos de datos enviados:', {
+        name: typeof djangoData.name,
+        description: typeof djangoData.description,
+        price: typeof djangoData.price + ' - valor: ' + djangoData.price,
+        category: typeof djangoData.category + ' - valor: ' + djangoData.category,
+        stock: typeof djangoData.stock + ' - valor: ' + djangoData.stock,
+        image: typeof djangoData.image
+      });
 
       const data = await this.post<Product, DjangoProductCreateRequest>('/products/', djangoData);
       
@@ -99,8 +108,17 @@ export class ProductService extends ApiService {
         success: true
       };
     } catch (error) {
-      console.error('❌ Error completo en createProduct:');
-      this.logError(error);
+      console.error('❌ Error completo en createProduct:', error);
+      
+      // ! Activar para más detalles del error de Axios
+      // if (error.response) {
+      //   console.error('📊 Datos del error:', {
+      //     status: error.response.status,
+      //     data: error.response.data,
+      //     headers: error.response.headers
+      //   });
+      // }
+      
       throw error;
     }
   }
@@ -237,78 +255,11 @@ export class ProductService extends ApiService {
 
     try {
       const response = await this.get<SearchResponse>(
-      `/products/search/?${queryParams.toString()}`
-  );
+        `/products/search/?${queryParams.toString()}`
+      );
       return this.adaptSearchResponse(response);
     } catch (error) {
       console.error('Error searching products:', error);
-      throw error;
-    }
-  }
-
-  async testConnection(): Promise<ConnectionTestResult> {
-    try {
-      console.log('🧪 Probando conexión con Django...');
-      
-      const getResponse = await this.get<SimpleTestResponse>('/products/simple-test/');
-      
-      const postData: TestPostData = {
-        test: 'datos de prueba',
-        number: 123
-      };
-      const postResponse = await this.post<SimpleTestResponse, TestPostData>('/products/simple-test/', postData);
-      
-      return {
-        get: getResponse,
-        post: postResponse
-      };
-      
-    } catch (error) {
-      console.error('❌ Error de conexión:');
-      this.logError(error);
-      throw error;
-    }
-  }
-
-  async testDebugCreate(productData: CreateProductRequest): Promise<ApiResponse<Product>> {
-    try {
-      const categoriesResponse = await this.getCategories();
-      const categories = categoriesResponse.data;
-      const category = categories.find(cat => cat.name === productData.category);
-      
-      if (!category) {
-        const availableCategories = categories.map(c => c.name).join(', ');
-        throw new Error(`Categoría "${productData.category}" no encontrada. Categorías disponibles: ${availableCategories}`);
-      }
-
-      const testData: DjangoProductCreateRequest = {
-        name: productData.name,
-        description: productData.description,
-        price: productData.price.toString(),
-        category_id: category.id,
-        stock: productData.stock,
-        image: productData.image || null,
-      };
-
-      console.log('🧪 Probando con endpoint de debug...');
-      
-      const response = await this.post<DebugProductResponse, DjangoProductCreateRequest>('/products/debug/create-product/', testData);
-      
-      console.log('✅ Respuesta del debug:', response);
-      
-      if (response.product) {
-        return {
-          data: response.product,
-          message: response.message || 'Producto creado exitosamente',
-          success: true
-        };
-      } else {
-        throw new Error(response.message || 'Error en la creación del producto');
-      }
-      
-    } catch (error) {
-      console.error('❌ Error en debug:');
-      this.logError(error);
       throw error;
     }
   }
@@ -348,16 +299,6 @@ export class ProductService extends ApiService {
       return pageParam ? parseInt(pageParam, 10) : null;
     } catch {
       return null;
-    }
-  }
-
-  private logError(error: unknown): void {
-    if (error instanceof Error) {
-      console.error('Tipo:', error.constructor.name);
-      console.error('Mensaje:', error.message);
-      console.error('Stack:', error.stack);
-    } else {
-      console.error('Error desconocido:', error);
     }
   }
 }

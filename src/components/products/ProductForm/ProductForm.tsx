@@ -142,7 +142,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             >
               <option value="">Selecciona una categoría</option>
               {categories.map(category => (
-                <option key={category.id} value={category.name}>
+                <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}

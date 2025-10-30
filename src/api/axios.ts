@@ -23,11 +23,7 @@ export class ApiService {
     // Interceptor de request para debug
     this.axiosInstance.interceptors.request.use(
       (config) => {
-        console.log('🚀 SENDING REQUEST:');
-        console.log('URL:', config.baseURL + (config.url || ''));
-        console.log('Method:', config.method?.toUpperCase());
-        console.log('Data:', config.data);
-        console.log('Headers:', config.headers);
+        
         return config;
       },
       (error) => {
@@ -39,18 +35,11 @@ export class ApiService {
     // Interceptor de respuesta para debug
     this.axiosInstance.interceptors.response.use(
       (response) => {
-        console.log('✅ RESPONSE SUCCESS:');
-        console.log('Status:', response.status);
-        console.log('Data:', response.data);
+        
         return response;
       },
       (error: AxiosError<ApiErrorData>) => {
-        console.log('❌ RESPONSE ERROR:');
-        console.log('URL:', error.config?.url);
-        console.log('Method:', error.config?.method?.toUpperCase());
-        console.log('Status:', error.response?.status);
-        console.log('Status Text:', error.response?.statusText);
-        console.log('Data:', error.response?.data);
+       
         
         const errorData = error.response?.data;
         const message =
